@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# HR Employee Manager
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile app for the HR & Payroll Platform MVP, built with Expo and React Native. It serves two kinds of users: HR admins (Ada) and employees (Tunde).
 
-## Get started
+## Tech stack
 
-1. Install dependencies
+- Expo SDK 54 with Expo Router (file-based routing)
+- React Native + TypeScript
+- Zustand for state management
+- AsyncStorage for local persistence
 
-   ```bash
-   npm install
-   ```
+## Getting started
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Prerequisites: Node.js (LTS), npm, and the Expo Go app on your phone or an Android/iOS emulator.
 
 ```bash
-npm run reset-project
+git clone https://github.com/iam-fuja/hr-employee-manager.git
+cd hr-employee-manager
+git checkout dev
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go, or press `a` (Android) / `i` (iOS) in the terminal.
 
-## Learn more
+## Project structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+app/          Screens and routes (Expo Router)
+components/   Reusable UI components
+constants/    Theme and shared constants
+hooks/        Custom hooks
+store/        Zustand stores (e.g. loginStore)
+styles/       Shared styles
+assets/       Images and fonts
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Branching workflow
 
-## Join the community
+- `main`: stable code only. Protected; changes arrive only through a pull request from `dev`.
+- `dev`: the working branch. Everyone commits here.
 
-Join our community of developers creating universal apps.
+Before you start work and before every push:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+git checkout dev
+git pull --rebase
+```
+
+Rules:
+
+1. Never push directly to `main`.
+2. Pull before you push, and push small commits often.
+3. Stage files by name (`git add <file>`), not `git add .`, so nothing unintended gets committed.
+4. Do not commit secrets or `.env` files.
+
+## Commit messages
+
+Use a short prefix: `feat:` new feature, `fix:` bug fix, `chore:` tooling or dependencies, `docs:` documentation, `style:` formatting only.
+
+Example: `feat: add login screen UI`
+
+## Releasing to main
+
+When `dev` is stable, open a pull request from `dev` to `main`, get one approval, and merge.
