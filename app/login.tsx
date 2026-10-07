@@ -1,129 +1,149 @@
-import { SpecialInput } from "@/components/ui/special-input";
-
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { myStyles } from "@/styles/main";
-import { Button } from "@react-navigation/elements";
-import { useRouter } from "expo-router";
-import { View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
+import { postMethod } from "@/lib/api-client";
 import { useLogin } from "@/store/loginStore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
-//import { useSQLiteContext } from "expo-sqlite";
-//import { postMethod } from "@/lib/api-client";
-//import APIClient from "@/lib/api-client";
-//import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
 
 export default function Login() {
-  // const [email, setEmail] = useState("");
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [password, setPassword] = useState("");
-
-  const {
-    updateFirstName,
-    updateEmail,
-    updateLastName,
-    updatePassword,
-    firstName,
-    lastName,
-    email,
-    password,
-    isLoading,
-  } = useLogin((state) => state);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const storedFirstName = await AsyncStorage.getItem("firstName");
-      const storedLastName = await AsyncStorage.getItem("lastName");
-      const storedEmail = await AsyncStorage.getItem("email");
-      const storedPassword = await AsyncStorage.getItem("password");
-      updateFirstName(storedFirstName || "");
-      updateLastName(storedLastName || "");
-      updateEmail(storedEmail || "");
-      updatePassword(storedPassword || "");
-    };
-
-    loadData();
-  }, []);
-
-  //const db = useSQLiteContext();
-
-  const storeData = async () => {
-    try {
-      await AsyncStorage.setItem("firstName", firstName);
-      await AsyncStorage.setItem("lastName", lastName);
-      await AsyncStorage.setItem("email", email);
-      await AsyncStorage.setItem("password", password);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const router = useRouter();
+  const { email, password, isLoading, updateEmail, updatePassword } = useLogin(
+    (state) => state,
+  );
+  const [showPassword, setShowPassword] = useState(false);
+
+  const canSubmit =
+    email.trim().length > 0 && password.length > 0 && !isLoading;
 
   const handleLogin = async () => {
-    await storeData();
+    if (!canSubmit) return;
+    // TODO: call the auth logic from loginStore (login API, store token, route by role)
+    //IMPLEMENTING LOGIN CALL FROM API-CLIENT FILE CONTD.
+    const response = await postMethod("/auth/login", {
+      username: email,
+      password: password,
+    });
 
-    // await db.runAsync(
-    //   "INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)",
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   password,
-    // );
+    router.replace("/(tabs)/employeeProfile");
+  };
 
-    // const userData = await postMethod("/auth/login", {
-    //   username: firstName,
-    //   password: password,
-    // });
+  const handleForgotPassword = () => {
+    // TODO: navigate to the forgot-password flow
+  };
 
-    // await SecureStore.setItemAsync("apiToken", userData.accessToken);
-
-    //router.replace("/(tabss)/profile");
+  const handleContactHR = () => {
+    // TODO: open mailto: or a contact screen
   };
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={myStyles.container}>
-        <View style={myStyles.card}>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            {/* <SpecialInput
-              value={firstName}
-              onChangeText={(text) => updateFirstName(text)}
-              label="First Name"
-              placeholder="Enter first name"
-            /> */}
-            {/* <SpecialInput
-              value={lastName}
-              onChangeText={(text) => updateLastName(text)}
-              label="Last Name"
-              placeholder="Enter last name"
-            /> */}
+    <SafeAreaView style={myStyles.safe}>
+      <KeyboardAvoidingView
+        style={myStyles.flex}
+        // behavior={Platform.OS === "android" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={myStyles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View>
+            <Text style={myStyles.title}>Welcome back</Text>
+            <Text style={myStyles.subtitle}>Sign in to continue</Text>
+
+            <View style={myStyles.field}>
+              <Text style={myStyles.label}>Email address</Text>
+              <TextInput
+                style={myStyles.input}
+                value={email}
+                onChangeText={updateEmail}
+                placeholder="you@email.com"
+                placeholderTextColor="#9a9a9a"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                textContentType="emailAddress"
+              />
+            </View>
+
+            <View style={myStyles.field}>
+              <Text style={myStyles.label}>Password</Text>
+              <View style={myStyles.passwordWrap}>
+                <TextInput
+                  style={[myStyles.input, myStyles.passwordInput]}
+                  value={password}
+                  onChangeText={updatePassword}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#9a9a9a"
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="password"
+                  textContentType="password"
+                />
+                <Pressable
+                  style={myStyles.eye}
+                  onPress={() => setShowPassword((v) => !v)}
+                  hitSlop={10}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    showPassword ? "Hide password" : "Show password"
+                  }
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={20}
+                    color="#111"
+                  />
+                </Pressable>
+              </View>
+            </View>
+
+            <Pressable
+              style={[myStyles.button, !canSubmit && myStyles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={!canSubmit}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canSubmit }}
+            >
+              <Text
+                style={[
+                  myStyles.buttonText,
+                  !canSubmit && myStyles.buttonTextDisabled,
+                ]}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleForgotPassword}
+              style={myStyles.forgot}
+              hitSlop={8}
+            >
+              <Text style={myStyles.forgotText}>Forget password?</Text>
+            </Pressable>
           </View>
 
-          <SpecialInput
-            value={email}
-            onChangeText={(text) => updateEmail(text)}
-            label="Email"
-            placeholder="Enter email"
-          />
-          <SpecialInput
-            value={password}
-            onChangeText={(text) => updatePassword(text)}
-            secureTextEntry={true}
-            label="Password"
-            placeholder="Enter Password"
-          />
-          <Button
-            onPressIn={handleLogin}
-            color="#4287f5"
-            style={myStyles.button}
-          >
-            {isLoading ? "Loading..." : "LOGIN"}
-          </Button>
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+          <View style={myStyles.footer}>
+            <Text style={myStyles.footerText}>Don't have an account? </Text>
+            <Pressable onPress={handleContactHR} hitSlop={8}>
+              <Text style={[myStyles.footerLink]}>contact HR</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
