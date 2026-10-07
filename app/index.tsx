@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
   return (
     <View style={myStyles.splash}>
-      <Text style={myStyles.splashText}>Employee Manager</Text>
+      <Text style={myStyles.splashText}>StaffFlow</Text>
     </View>
   );
 }
