@@ -1,8 +1,8 @@
+import { myStyles } from "@/styles/main";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { myStyles } from "@/styles/main";
 
 const PRIMARY = "#407BFF";
 
@@ -14,6 +14,8 @@ const profile = {
   employeeId: "25374",
   role: "Software engineer - IT",
 };
+
+
 
 type FieldProps = { label: string; value: string };
 
@@ -29,6 +31,8 @@ function ReadOnlyField({ label, value }: FieldProps) {
     </View>
   );
 }
+
+
 
 export default function Profile() {
   const router = useRouter();
@@ -89,6 +93,12 @@ export default function Profile() {
         <ReadOnlyField label="Phone number" value={profile.phone} />
         <ReadOnlyField label="Employee ID" value={profile.employeeId} />
 
+          {/* <ReadOnlyField label="Employee ID" value={profile.employeeId} /> */}
+
+        
+     
+        
+
         <Pressable
           onPress={handleLogout}
           style={myStyles.logout}
@@ -102,3 +112,6 @@ export default function Profile() {
     </SafeAreaView>
   );
 }
+
+
+
