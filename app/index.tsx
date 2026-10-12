@@ -11,7 +11,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace("/leaves");
+      router.replace("/login");
     }, 3000);
 
     return () => clearTimeout(timer);
