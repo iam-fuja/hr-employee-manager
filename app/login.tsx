@@ -1,20 +1,32 @@
+import APIClient from "@/lib/api-client";
+import { useLogin } from "@/store/loginStore";
+import { myStyles } from "@/styles/main";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { myStyles } from "@/styles/main";
-import { postMethod } from "@/lib/api-client";
-import { useLogin } from "@/store/loginStore";
-import { useRouter } from "expo-router";
+import { saveToken } from "@/lib/token-storage";
+
+//LOGIN ERROR HANDLING FUNCTION
+const getLoginErrorMessage = (error: any): string => {
+  const status = error?.response?.status;
+  if (status === 400 || status === 401) {
+    return "Incorrect email or password. Please try again.";
+  }
+  if (!error?.response) {
+    return "Cannot reach the server. Check your connection and try again.";
+  }
+  return "Something went wrong. Please try again.";
+};
 
 export default function Login() {
   const router = useRouter();
@@ -22,20 +34,49 @@ export default function Login() {
     (state) => state,
   );
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false); // ▶ NEW
 
   const canSubmit =
-    email.trim().length > 0 && password.length > 0 && !isLoading;
+    email.trim().length > 0 && password.length > 0 && !isLoading && !submitting; // ▶ NEW
 
   const handleLogin = async () => {
     if (!canSubmit) return;
+    setSubmitting(true); // ▶ NEW
+
     // TODO: call the auth logic from loginStore (login API, store token, route by role)
     //IMPLEMENTING LOGIN CALL FROM API-CLIENT FILE CONTD.
-    const response = await postMethod("/auth/login", {
-      username: email,
-      password: password,
-    });
+    // const response = await postMethod("/auth/login", {
+    //   username: email,
+    //   password: password,
+    // });
+    try {
+      let response; // ▶ NEW
+      try {
+        // ▶ NEW
+        response = await APIClient().postMethod("/api/users/login", {
+          email: email,
+          password: password,
+        });
+      } catch (error) {
+        // ▶ NEW
+        alert(getLoginErrorMessage(error)); // ▶ NEW
+        return; // ▶ NEW
+      } // ▶ NEW
+      if (!response?.token) {
+        alert(response?.message ?? "Login failed. Please try again.");
+        return;
+      }
+      await saveToken(response.token);
+      await SecureStore.setItemAsync("authToken", response.token);
 
-    router.replace("/(tabs)/employeeProfile");
+      //alert("Login successful!");
+      // console.log("Login successful! Token:", response.token);
+      // alert("Login successful! Token: " + response.token);
+      router.replace("/(tabs)/employeeHome");
+    } finally {
+      // ▶ closes the OUTER try
+      setSubmitting(false); // ▶
+    } // ▶
   };
 
   const handleForgotPassword = () => {
@@ -123,7 +164,8 @@ export default function Login() {
                   !canSubmit && myStyles.buttonTextDisabled,
                 ]}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {/* {isLoading ? "Signing in..." : "Sign in"} */}
+                {isLoading || submitting ? "Signing in..." : "Sign in"}
               </Text>
             </Pressable>
 
