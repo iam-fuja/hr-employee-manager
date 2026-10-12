@@ -7,7 +7,7 @@ import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export const unstable_settings = {
-  anchor: "employeeProfile",
+  anchor: "employeeHome",
 };
 
 export default function TabLayout() {
@@ -30,34 +30,23 @@ export default function TabLayout() {
           ),
         }}
       /> */}
+
+      <Tabs.Screen
+        name="employeeHome"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="employeeProfile"
         options={{
           title: "Profile",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="person.circle" color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="check"
-        options={{
-          title: "Check",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
-          ),
-
-        
-         } }
-      />
-
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
         }}
       />
