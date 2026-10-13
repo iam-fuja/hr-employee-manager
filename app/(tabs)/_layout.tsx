@@ -50,6 +50,17 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="leaves"
+        options={{
+          title: "Leaves",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="l.square.fill" color={color} />
+          ),
+        }}
+      />
+
     </Tabs>
   );
 }

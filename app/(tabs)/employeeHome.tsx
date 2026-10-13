@@ -416,6 +416,10 @@ export default function EmployeeHome() {
       router.push("/(tabs)/employeeProfile");
       return;
     }
+    if (id === "leave") {
+      router.push("/(tabs)/leaves");
+      return;
+    }
 
     // TODO: payslip -> payslip list, leave -> leave screen, messages -> chat with HR
   };
