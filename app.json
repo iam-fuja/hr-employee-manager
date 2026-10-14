@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "StaffFlow",
-    "slug": "StaffFlow",
+    "slug": "hr_employee_manager",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
