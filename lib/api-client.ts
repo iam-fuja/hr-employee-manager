@@ -1,5 +1,4 @@
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { getToken, removeToken } from "@/lib/token-storage";
 
@@ -12,17 +11,9 @@ const API_URL = "https://hr-staffflow-backend.onrender.com";
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
+  timeout: 60000,
   //headers: {},
 });
-
-// ORIGINAL -- Attach the saved token to every request automatically
-// apiClient.interceptors.request.use(async (config) => {
-//   const token = await SecureStore.getItemAsync("authToken");
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
 
 //Web compatible -- Attach the saved token to every request automatically
 apiClient.interceptors.request.use(async (config) => {
@@ -32,18 +23,6 @@ apiClient.interceptors.request.use(async (config) => {
   }
   return config;
 });
-
-// ORIGINAL -- Attach the saved token to every request automatically
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     if (error.response?.status === 401) {
-//       await SecureStore.deleteItemAsync("authToken"); // remove dead token
-//       router.replace("/login"); // send user to login
-//     }
-//     return Promise.reject(error);
-//   },
-// );
 
 //Web compatible -- Attach the saved token to every request automatically
 let handling401 = false; // stops several parallel 401s from redirecting twice
@@ -74,17 +53,6 @@ export default function APIClient() {
     return data;
   };
 
-  // const postMethod = async (endpoint: string, payload: any) => {
-  //   try {
-  //     const response = await apiClient.post(endpoint, payload);
-  //     const data = await response.data;
-  //     return data;
-  //   } catch (error) {
-  //     console.error("Error in POST request:", error);
-  //   } finally {
-  //   }
-  // };
-
   const postMethod = async (endpoint: string, payload: any) => {
     const response = await apiClient.post(endpoint, payload);
     const data = await response.data;
@@ -96,7 +64,6 @@ export default function APIClient() {
 //STANDALONE API IMPLEMENTATION USING AXIOS METHOD - NOT FUNCTIONAL
 const getMethod = async (endpoint: string) => {
   const response = await apiClient.get(endpoint);
-  //const status = response.status;
   const data = await response.data;
   return data;
 };
