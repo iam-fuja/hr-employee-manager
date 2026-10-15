@@ -3,7 +3,6 @@ import { useLogin } from "@/store/loginStore";
 import { myStyles } from "@/styles/main";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -67,11 +66,7 @@ export default function Login() {
         return;
       }
       await saveToken(response.token);
-      //await SecureStore.setItemAsync("authToken", response.token);
 
-      //alert("Login successful!");
-      // console.log("Login successful! Token:", response.token);
-      // alert("Login successful! Token: " + response.token);
       router.replace("/(tabs)/employeeHome");
     } finally {
       // ▶ closes the OUTER try
