@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useLogin } from "@/store/loginStore";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { getToken, removeToken } from "@/lib/token-storage";
@@ -47,16 +46,26 @@ apiClient.interceptors.request.use(async (config) => {
 // );
 
 //Web compatible -- Attach the saved token to every request automatically
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     if (error.response?.status === 401) {
-//       await removeToken();
-//       router.replace("/login");
-//     }
-//     return Promise.reject(error);
-//   },
-// );
+let handling401 = false; // stops several parallel 401s from redirecting twice
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    // A wrong password on login is a normal error, not an expired session
+    const isLoginCall = error.config?.url?.includes("/users/login");
+
+    if (error.response?.status === 401 && !isLoginCall && !handling401) {
+      handling401 = true;
+      try {
+        await removeToken(); // drop the dead token
+        router.replace("/login"); // send the user back to the login screen
+      } finally {
+        handling401 = false;
+      }
+    }
+    return Promise.reject(error); // callers still get the error
+  },
+);
 
 export default function APIClient() {
   const getMethod = async (endpoint: string) => {
