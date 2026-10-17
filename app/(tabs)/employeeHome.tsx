@@ -155,6 +155,14 @@ export default function EmployeeHome() {
     }
 
     // TODO: payslip -> payslip list, leave -> leave screen, messages -> chat with HR
+    if (id === "messages") {
+      router.push("/(tabs)/messages");
+      return;
+    }
+    // if (id === "payslip") {
+    //   router.push("/(tabs)/payslip");
+    //   return;
+    // }
   };
 
   return (
